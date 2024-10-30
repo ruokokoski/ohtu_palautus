@@ -8,6 +8,10 @@ class PlayerStats:
             key=lambda p: p.goals + p.assists,
             reverse=True
         )
+    
+    def get_all_nats(self):
+        nats = {player.nationality for player in self.players}
+        return list(nats)
 
     def __str__(self):
         return f"PlayerStats"
