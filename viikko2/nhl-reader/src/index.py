@@ -20,8 +20,9 @@ def main():
     #    print(player)
 
     fin_players = [player for player in players if player.nationality == 'FIN']
+    fin_players_sorted = sorted(fin_players, key=lambda p: p.goals + p.assists, reverse=True)
     print("Players from FIN\n")
-    for player in fin_players:
+    for player in fin_players_sorted:
         print(player)
 
 if __name__ == "__main__":
