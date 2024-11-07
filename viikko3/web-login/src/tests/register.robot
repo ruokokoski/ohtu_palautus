@@ -1,5 +1,6 @@
 *** Settings ***
 Resource  resource.robot
+Resource  login_resource.robot
 Suite Setup     Open And Configure Browser
 Suite Teardown  Close Browser
 Test Setup      Reset Application Create User And Go To Register Page
@@ -48,6 +49,30 @@ Register With Username That Is Already In Use
     Submit Credentials
     Register Should Fail With Message    Username in use
 
+Login After Successful Registration
+    Set Username  kalle
+    Set Password  kalle1234
+    Set Password Confirmation    kalle1234
+    Submit Credentials
+    Register Should Succeed
+    Click Link  Continue to main page
+    Click Button  Logout
+    Set Username  kalle
+    Set Password  kalle1234
+    Submit Login
+    Login Should Succeed
+
+Login After Failed Registration
+    Set Username  kalle
+    Set Password  kalle1234
+    Set Password Confirmation    kalle123
+    Submit Credentials
+    Click Link  Login
+    Set Username  kalle
+    Set Password  kalle1234
+    Submit Login
+    Login Should Fail With Message    Invalid username or password
+
 *** Keywords ***
 Reset Application Create User And Go To Register Page
     Reset Application
@@ -71,6 +96,9 @@ Set Password Confirmation
 
 Submit Credentials
     Click Button  Register
+
+Submit Login
+    Click Button  Login
 
 Register Should Succeed
     Title Should Be    Welcome to Ohtu Application!
