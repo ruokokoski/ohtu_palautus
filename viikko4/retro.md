@@ -1,5 +1,5 @@
 # Retrospektiivitekniikat
-
+ 
 Retrospektiivitekniikoita on kehitetty lukuisia erilaisia. Seuraavassa esitetään yhteenveto kahdesta eri tekniikasta.
 
 ## Start, Stop, Continue, More of, Less of Wheel
