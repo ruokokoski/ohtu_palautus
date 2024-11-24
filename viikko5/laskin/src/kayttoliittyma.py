@@ -12,10 +12,16 @@ class Komentotehdas:
     def __init__(self, sovelluslogiikka, lue_syote):
         self._sovelluslogiikka = sovelluslogiikka
         self._lue_syote = lue_syote
+        self._edellinen_arvo = None
+
+    def kumoa(self):
+        if self._edellinen_arvo is not None:
+            self._sovelluslogiikka.aseta_arvo(self._edellinen_arvo)
 
 class Summa(Komentotehdas):
     def suorita(self):
         try:
+            self._edellinen_arvo = self._sovelluslogiikka.arvo()
             arvo = int(self._lue_syote())
             self._sovelluslogiikka.plus(arvo)
         except ValueError:
@@ -25,6 +31,7 @@ class Summa(Komentotehdas):
 class Erotus(Komentotehdas):
     def suorita(self):
         try:
+            self._edellinen_arvo = self._sovelluslogiikka.arvo()
             arvo = int(self._lue_syote())
             self._sovelluslogiikka.miinus(arvo)
         except ValueError:
@@ -33,23 +40,33 @@ class Erotus(Komentotehdas):
 
 class Nollaus(Komentotehdas):
     def suorita(self):
+        self._edellinen_arvo = self._sovelluslogiikka.arvo()
         self._sovelluslogiikka.nollaa()
 
 
 class Kumoa(Komentotehdas):
+    def __init__(self, sovelluslogiikka):
+        super().__init__(sovelluslogiikka, None)
+        self._edellinen_komento = None
+
+    def aseta_edellinen(self, komento):
+        self._edellinen_komento = komento
+
     def suorita(self):
-        pass
+        if self._edellinen_komento:
+            self._edellinen_komento.kumoa()
 
 class Kayttoliittyma:
     def __init__(self, sovelluslogiikka, root):
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
+        #self._vika = None
         
         self._komennot = {
             Komento.SUMMA: Summa(sovelluslogiikka, self._lue_syote),
             Komento.EROTUS: Erotus(sovelluslogiikka, self._lue_syote),
             Komento.NOLLAUS: Nollaus(sovelluslogiikka, self._lue_syote),
-            #Komento.KUMOA: Kumoa(sovelluslogiikka, self._lue_syote),
+            Komento.KUMOA: Kumoa(sovelluslogiikka),
         }
 
     def _lue_syote(self):
@@ -98,6 +115,9 @@ class Kayttoliittyma:
     def _suorita_komento(self, komento):
         if komento in self._komennot:
             self._komennot[komento].suorita()
+            
+            if komento != Komento.KUMOA:
+                self._komennot[Komento.KUMOA].aseta_edellinen(self._komennot[komento])
 
         self._kumoa_painike["state"] = constants.NORMAL
 
