@@ -7,21 +7,23 @@ def main():
     reader = PlayerReader(url)
     stats = Statistics(reader)
 
+    query1 = QueryBuilder()
+    m1 = (
+        query1
+            .plays_in("PHI")
+            .has_at_least(10, "assists")
+            .has_fewer_than(10, "goals")
+            .build()
+        )
+    query2 = QueryBuilder()
+    m2 = (
+        query2
+            .plays_in("EDM")
+            .has_at_least(50, "points")
+            .build()
+        )
     query = QueryBuilder()
-    matcher = query.build()
-
-    for player in stats.matches(matcher):
-        print(player)
-    print()
-    query = QueryBuilder()
-    matcher = query.plays_in("NYR").build()
-
-    for player in stats.matches(matcher):
-        print(player)
-    print()
-    query = QueryBuilder()
-
-    matcher = query.plays_in("NYR").has_at_least(10, "goals").has_fewer_than(20, "goals").build()
+    matcher = query.one_of(m1, m2).build()
 
     for player in stats.matches(matcher):
         print(player)

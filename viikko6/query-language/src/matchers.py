@@ -17,6 +17,10 @@ class QueryBuilder:
         self.query.has_fewer_than(value, attr)
         return self
     
+    def one_of(self, *queries):
+        self.query.one_of(*queries)
+        return self
+    
 class Query:
     def __init__(self):
         self._matchers = []
@@ -35,6 +39,10 @@ class Query:
 
     def has_fewer_than(self, value, attr):
         self._matchers.append(lambda player: getattr(player, attr) < value)
+        return self
+    
+    def one_of(self, *queries):
+        self._matchers.append(lambda player: any(query.test(player) for query in queries))
         return self
     
     def test(self, player):
