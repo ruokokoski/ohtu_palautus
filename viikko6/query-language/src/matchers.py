@@ -1,3 +1,59 @@
+class QueryBuilder:
+    def __init__(self):
+        self.query = Query()
+
+    def build(self):
+        return self.query
+    
+    def plays_in(self, team):
+        self.query.plays_in(team)
+        return self
+    
+    def has_at_least(self, value, attr):
+        self.query.has_at_least(value, attr)
+        return self
+
+    def has_fewer_than(self, value, attr):
+        self.query.has_fewer_than(value, attr)
+        return self
+    
+class Query:
+    def __init__(self):
+        self._matchers = []
+
+    def all(self):
+        self._matchers.append(All())
+        return self
+    
+    def plays_in(self, team):
+        self._matchers.append(lambda player: player.team == team)
+        return self
+    
+    def has_at_least(self, value, attr):
+        self._matchers.append(lambda player: getattr(player, attr) >= value)
+        return self
+
+    def has_fewer_than(self, value, attr):
+        self._matchers.append(lambda player: getattr(player, attr) < value)
+        return self
+    
+    def test(self, player):
+        if not self._matchers:
+            return True
+        for matcher in self._matchers:
+            if not matcher(player):
+                return False
+        return True
+
+class All:
+    def __init__(self):
+        pass
+
+    def test(self, player):
+        return True
+    
+
+'''
 class And:
     def __init__(self, *matchers):
         self._matchers = matchers
@@ -37,16 +93,6 @@ class HasAtLeast:
         player_value = getattr(player, self._attr)
 
         return player_value >= self._value
-    
-class All:
-    def __init__(self, *matchers):
-        self._matchers = matchers
-
-    def test(self, player):
-        for matcher in self._matchers:
-            if not matcher.test(player):
-                return False
-        return True
 
 class Not:
     def __init__(self, matcher):
@@ -64,3 +110,4 @@ class HasFewerThan:
         player_value = getattr(player, self._attr)
 
         return player_value < self._value
+'''
